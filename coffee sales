@@ -1,0 +1,82 @@
+CREATE DATABASE coffee_sales;
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+	customer_name VARCHAR(50),
+	gender VARCHAR(10),
+	city VARCHAR(50)
+);
+SELECT current_database();
+coffee_sales
+SELECT * FROM customers;
+SELECT * FROM sales;
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public';
+CREATE TABLE sales (
+    sale_id SERIAL PRIMARY KEY,
+	customer_id INT REFERENCES
+customers(customer_id),
+    coffee_type VARCHAR(50),
+	quantity INT,
+	price INT
+);
+INSERT INTO customers (customer_name,
+gender, city)
+VALUES
+('Arun', 'M', 'Hyderabad'),
+('Sony', 'F', 'Chennai'),
+('Ravi', 'M', 'Bangalore');
+INSERT INTO sales (customer_id,
+coffee_type, quantity, price)
+VALUES
+(1, 'Latte', 2, 150),
+(2, 'Espresso', 1, 120),
+(1, 'Cappuccino', 3, 180),
+(3, 'Latte', 2, 150),
+(2, 'Latte', 1, 150);
+SELECT * FROM sales;
+SELECT
+    coffee_type,
+	SUM(quantity * price) AS revenue
+FROM sales
+GROUP BY coffee_type
+ORDER BY revenue DESC;
+SELECT
+    s.coffee_type,
+	SUM(s.quantity * s.price) AS revenue
+FROM sales s
+GROUP BY s.coffee_type;
+SELECT
+    SUM(quantity * price) AS total_revenue
+FROM sales;
+SELECT
+    coffee_type,
+	SUM(COALESCE(quantity * 0) * 
+COALESCE(price, 0)) AS revenue
+FROM sales
+GROUP BY coffee_type;
+SELECT
+    coffee_type,
+	SUM(quantity * price) AS revenue
+FROM sales
+GROUP BY coffee_type
+ORDER BY revenue DESC;
+SELECT * FROM sales;
+SELECT
+    c.customer_name,
+	SUM(s.quantity * s.price) AS
+total_spent
+FROM sales s
+JOIN customers c ON s.customer_id =
+c.customer_id
+GROUP BY c.customer_name
+ORDER BY total_spent DESC;
+SELECT
+    c.city,
+	SUM(s.quantity * s.price) AS
+city_revenue
+FROM sales s
+JOIN customers c ON s.customer_id =
+c.customer_id
+GROUP BY c.city
+ORDER BY city_revenue DESC;
